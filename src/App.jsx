@@ -36,7 +36,7 @@ function App() {
 
   return (
     <>
-      <UserTable profile={profile} isLoading={isLoading} dataFetched={dataFetched} />
+      {/* <UserTable profile={profile} isLoading={isLoading} dataFetched={dataFetched} /> */}
       <br />
       <div className="App">
         <GamePage />
