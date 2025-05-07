@@ -1,0 +1,78 @@
+/* src/pages/SubmitGamePage.css */
+
+.submit-container {
+    background-color: #1e1e2f;
+    color: #f0f0f0;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .submit-container h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    color: #00c2ff;
+  }
+  
+  .tech-note {
+    background-color: #292940;
+    padding: 16px;
+    border-left: 4px solid #00c2ff;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    color: #d0d0ff;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  
+  .submit-container label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  
+  .submit-container input[type="text"],
+  .submit-container textarea,
+  .submit-container input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #2b2b3d;
+    color: #f0f0f0;
+  }
+  
+  .submit-container textarea {
+    resize: vertical;
+  }
+  
+  .submit-container input[type="file"] {
+    padding: 6px;
+  }
+  
+  .note {
+    color: #999;
+    font-size: 14px;
+    margin-left: 4px;
+  }
+  
+  .submit-container button {
+    background-color: #00c2ff;
+    color: #000;
+    padding: 12px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .submit-container button:hover {
+    background-color: #00aee0;
+  }
+  
