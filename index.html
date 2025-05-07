@@ -10,4 +10,14 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
+
+  <script>
+    window.SaveScoreToLocalStorage = function(playerName, score) {
+        const scores = JSON.parse(localStorage.getItem("scores") || "[]");
+        scores.push({ playerName, score, timestamp: Date.now() });
+        localStorage.setItem("scores", JSON.stringify(scores));
+        console.log("Saved to localStorage:", playerName, score);
+    };
+</script>
+
 </html>
