@@ -4,8 +4,8 @@ import React from "react";
 import GamePage from "./webgl/GamePage";
 import UserTable from "./pages/UserTable"; // Import komponen tabel
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/';
-import Signup from './pages/';
+import Login from './pages/login';
+import Signup from './pages/signup';
 import SubmitGamePage from './pages/SubmitGamePage';
 
 // function App() {
