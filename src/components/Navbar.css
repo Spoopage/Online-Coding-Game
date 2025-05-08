@@ -1,0 +1,26 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    width: 97.5%;
+    background-color: #0a0f24;
+    color: white;
+  }
+  
+  .nav-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .nav-buttons .nav-link {
+    margin-left: 15px;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    /* text-decoration: underline; */
+    color: #4c6ef5;
+  }
+  

@@ -36,10 +36,10 @@ function Login() {
             onChange={handleChange}
             required
             />
-            <button type="submit" className="auth-button">LOGIN</button>
+            <button type="submit" className="auth-button">Masuk</button>
         </form>
         <p style={{ marginTop: '15px' }}>
-            Belum punya akun? <Link to="/signup" className="auth-link">DAFTAR</Link>
+            Belum punya akun? <Link to="/signup" className="auth-link">Sign Up</Link>
         </p>
         </div>
     );
