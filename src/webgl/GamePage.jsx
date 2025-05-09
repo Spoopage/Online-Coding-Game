@@ -3,7 +3,7 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 
 function GamePage() {
     const { unityProvider } = useUnityContext({
-        loaderUrl: "database.",
+        loaderUrl: "build/webgl/Build.loader.js",
         dataUrl: "build/webgl/Build.data.unityweb",
         frameworkUrl: "build/webgl/Build.framework.js.unityweb",
         codeUrl: "build/webgl/Build.wasm.unityweb",
@@ -24,7 +24,7 @@ function GamePage() {
                     backgroundColor: "#000", // optional, biar kontras
                 }}
             >
-                <Unity unityProvider={unityProvider} style={{ width: "100%", height: "100%" }} />
+                <Unity unityProvider={unityProvider} style={{ width: 800, height: 600 }} />
             </div>
         </div>
     );
