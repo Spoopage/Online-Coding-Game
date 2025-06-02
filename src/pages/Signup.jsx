@@ -16,7 +16,12 @@ function Signup() {
 
     const { data, error } = await supabase.auth.signUp({
       email,
-      password
+      password,
+      options: {
+        data: {
+          username: 'namaUser' // kirim username ke metadata
+        }
+      }
     });
 
     if (error) {

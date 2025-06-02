@@ -75,8 +75,10 @@ function App() {
         {/* Kalau belum login */}
         {!session && (
           <>
+            <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="*" element={<Login />} />
             {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
           </>
         )}
@@ -84,9 +86,11 @@ function App() {
         {/* Kalau sudah login */}
         {session && (
           <>
+            <Route path="/" element={<Homepage />} />
             <Route path="/game" element={<GamePage />} />
             <Route path="/submit" element={<SubmitGamePage />} />
-            <Route path="/" element={<Homepage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
           </>
         )}
