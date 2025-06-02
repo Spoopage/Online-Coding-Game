@@ -18,7 +18,12 @@ function App() {
   const [dataFetched, setDataFetched] = useState(false);
   const { session, role } = useSessionAndRole();
 
-  if (!session) return <AuthForm />;
+  // if (!session) return (
+  //   <Router>
+  //     {/* <Login /> */}
+  //     <Signup />
+  //   </Router>
+  // );
 
   // // Local DB
   // useEffect(() => {
@@ -57,21 +62,34 @@ function App() {
   return (
     <Router>
       <Navbar />
-      <div>
+        {/* Supabase Auth Testing */}
+        {/* <div>
           <h1>Halo, {session.user.email}</h1>
           <p>Role kamu: {role}</p>
 
           {role === 'admin' && <button onClick={() => alert("Admin-only feature here!")}>Fitur Admin</button>}
 
           <button onClick={() => supabase.auth.signOut()}>Logout</button>
-        </div>  
+        </div>   */}
       <Routes>
-        
-        <Route path="/" element={<Homepage />} />
-        <Route path="/game" element={<GamePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/submit" element={<SubmitGamePage />} />
+        {/* Kalau belum login */}
+        {!session && (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+          </>
+        )}
+
+        {/* Kalau sudah login */}
+        {session && (
+          <>
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/submit" element={<SubmitGamePage />} />
+            <Route path="/" element={<Homepage />} />
+            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+          </>
+        )}
       </Routes>
     </Router>
   );
