@@ -7,6 +7,11 @@ import { supabase } from '../supabaseClient';
  * @returns {string|null} Public URL file, atau null jika gagal
  */
 export function getPublicUrl(pathInBucket, bucketName = 'games') {
+    // Jika pathInBucket sudah diawali dengan nama bucket, hapus
+    if (pathInBucket.startsWith(`${bucketName}/`)) {
+        pathInBucket = pathInBucket.replace(`${bucketName}/`, '');
+    }
+
     const { data, error } = supabase.storage.from(bucketName).getPublicUrl(pathInBucket);
     if (error) {
         console.error(`Gagal mendapatkan URL untuk: ${pathInBucket}`, error.message);
@@ -14,3 +19,4 @@ export function getPublicUrl(pathInBucket, bucketName = 'games') {
     }
     return data.publicUrl;
 }
+

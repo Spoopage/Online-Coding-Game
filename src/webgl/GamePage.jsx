@@ -1,72 +1,54 @@
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { supabase } from "../supabaseClient";
-import { useEffect, useState } from "react";
-import { getPublicUrl } from '../utils/getPublicUrl';
+
+function GamePlayer({ game }) {
+  const { unityProvider, isLoaded, loadingProgression } = useUnityContext({
+    loaderUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.loader_file}`,
+    dataUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.data_file}`,
+    frameworkUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.framework_file}`,
+    codeUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.code_file}`,
+  });
+
+  return (
+    <div>
+      <h2>{game.title}</h2>
+      {!isLoaded && (
+        <p style={{ padding: "1rem" }}>
+          Loading Unity... {Math.round(loadingProgression * 100)}%
+        </p>
+      )}
+      <Unity unityProvider={unityProvider} style={{ width: "100%", height: "600px" }} />
+    </div>
+  );
+}
 
 function GamePage() {
-    const { gameId } = useParams();
-    const [game, setGame] = useState(null);
-    const [unityConfig, setUnityConfig] = useState({
-        loaderUrl: "",
-        dataUrl: "",
-        frameworkUrl: "",
-        codeUrl: "",
-    });
+  const { gameId } = useParams();
+  const [game, setGame] = useState(null);
 
-    const { unityProvider, isLoaded } = useUnityContext(unityConfig);
+  useEffect(() => {
+    const fetchGame = async () => {
+      const { data, error } = await supabase
+        .from("games")
+        .select("*")
+        .eq("id", gameId)
+        .single();
 
-    useEffect(() => {
-        const fetchGame = async () => {
-            if (!gameId) {
-                console.error("gameId is undefined");
-                return;
-            }
+      if (error) {
+        console.error("Failed to fetch game:", error);
+      } else {
+        setGame(data);
+      }
+    };
 
-            const { data, error } = await supabase
-                .from("games")
-                .select("*")
-                .eq("id", gameId)
-                .single();
+    if (gameId) fetchGame();
+  }, [gameId]);
 
-            if (error || !data) {
-                console.error("Gagal ambil data game:", error?.message || "Game tidak ditemukan");
-                return;
-            }
+  if (!game) return <p style={{ padding: "2rem" }}>Loading game data...</p>;
 
-            setGame(data);
-
-            const basePath = `${data.id}/Build`;
-
-            const newConfig = {
-                loaderUrl: getPublicUrl(`${basePath}/${data.loader_file}`),
-                dataUrl: getPublicUrl(`${basePath}/${data.data_file}`),
-                frameworkUrl: getPublicUrl(`${basePath}/${data.framework_file}`),
-                codeUrl: getPublicUrl(`${basePath}/${data.code_file}`),
-            };
-
-            console.log("Unity config generated:", newConfig); // debug
-            console.log("✅ Final Unity file URLs:");
-            console.log("Loader:", newConfig.loaderUrl);
-            console.log("Framework:", newConfig.frameworkUrl);
-            console.log("Data:", newConfig.dataUrl);
-            console.log("Code:", newConfig.codeUrl);
-
-            setUnityConfig(newConfig);
-        };
-
-        fetchGame();
-    }, [gameId]);
-
-    if (!game) return <p style={{ padding: "2rem" }}>Game tidak ditemukan atau sedang dimuat...</p>;
-
-    return (
-        <div>
-            <h1>{game.title}</h1>
-            {!isLoaded && <p>Memuat Unity game...</p>}
-            <Unity unityProvider={unityProvider} style={{ width: 800, height: 600 }} />
-        </div>
-    );
+  return <GamePlayer game={game} />;
 }
 
 export default GamePage;

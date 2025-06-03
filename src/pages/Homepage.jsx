@@ -40,24 +40,27 @@ function Homepage() {
       <div className="game-scroll-section">
         <button className="scroll-btn" onClick={scrollLeft}>←</button>
         <div className="game-carousel" ref={scrollRef}>
-          {games.map((game) => {
-            if (!game.id) return null; // cegah link error
-            const thumbnail = getPublicUrl(`${game.id}/thumbnail.png`);
-            return (
-              <div className="game-card" key={game.id}>
-                <Link to={`/game/${game.id}`}>
-                  <div className="game-thumbnail">
-                    <img
-                      src={thumbnail || "/placeholder.png"}
-                      alt={game.title}
-                      className="thumbnail-image"
-                    />
+          {games?.length > 0 &&
+            games
+              .filter((game) => !!game?.id && !!game?.title)
+              .map((game) => {
+                const thumbnail = getPublicUrl(`${game.id}/thumbnail.png`);
+                return (
+                  <div className="game-card" key={game.id}>
+                    <Link to={`/game/${game.id}`}>
+                      <div className="game-thumbnail">
+                        <img
+                          src={thumbnail || "/placeholder.png"}
+                          alt={game.title}
+                          className="thumbnail-image"
+                        />
+                      </div>
+                    </Link>
+                    <h3>{game.title}</h3>
                   </div>
-                </Link>
-                <h3>{game.title}</h3>
-              </div>
-            );
-          })}
+                );
+              })}
+
         </div>
         <button className="scroll-btn" onClick={scrollRight}>→</button>
       </div>

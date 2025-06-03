@@ -1,156 +1,101 @@
-// src/pages/SubmitGamePage.jsx
-import { useState } from 'react';
-import { supabase } from '../supabaseClient';
-import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from 'react-router-dom';
-import './SubmitGamePage.css';
-import { uploadToStorage } from '../utils/uploadToStorage';
+import { useState } from "react";
+import { supabase } from "../supabaseClient";
+import { v4 as uuidv4 } from "uuid";
+import "./SubmitGamePage.css";
 
 const SubmitGamePage = () => {
-    const navigate = useNavigate();
-    const gameId = uuidv4();
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    image: null,
+    loaderFile: null,
+    dataFile: null,
+    frameworkFile: null,
+    wasmFile: null,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (files) {
+      setFormData({ ...formData, [name]: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const gameId = uuidv4(); // ID unik untuk game
     const basePath = `${gameId}/Build`;
 
-    const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        image: null,
-        dataFile: null,
-        frameworkFile: null,
-        loaderFile: null,
-        wasmFile: null,
-    });
+    const uploads = [
+      { name: "loader_file", file: formData.loaderFile, filename: "Build.loader.js" },
+      { name: "data_file", file: formData.dataFile, filename: "Build.data" },
+      { name: "framework_file", file: formData.frameworkFile, filename: "Build.framework.js" },
+      { name: "code_file", file: formData.wasmFile, filename: "Build.wasm" },
+    ];
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (files) {
-            setFormData({ ...formData, [name]: files[0] });
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
-    };
+    try {
+      // Upload setiap file ke Supabase Storage
+      for (const item of uploads) {
+        const { error } = await supabase.storage
+          .from("games")
+          .upload(`${basePath}/${item.filename}`, item.file);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const gameId = uuidv4();
-        const buildFolder = `${gameId}/Build`;
-        let thumbnailUrl = null;
+        if (error) throw new Error(`Upload gagal: ${item.filename}`);
+      }
 
-        try {
-            // Upload Unity build files
-            await uploadToStorage(formData.loaderFile, buildFolder, 'Build.loader.js');
-            await uploadToStorage(formData.frameworkFile, buildFolder, 'Build.framework.js.unityweb');
-            await uploadToStorage(formData.dataFile, buildFolder, 'Build.data.unityweb');
-            await uploadToStorage(formData.wasmFile, buildFolder, 'Build.wasm.unityweb');
+      // Simpan metadata game ke database
+      const { error: insertError } = await supabase.from("games").insert([
+        {
+          id: gameId,
+          title: formData.title,
+          description: formData.description,
+          base_path: basePath,
+          loader_file: "Build.loader.js",
+          data_file: "Build.data",
+          framework_file: "Build.framework.js",
+          code_file: "Build.wasm",
+        },
+      ]);
 
-            // Upload optional thumbnail
-            if (formData.image) {
-                thumbnailUrl = await uploadToStorage(formData.image, gameId, 'thumbnail.png');
-            }
+      if (insertError) throw insertError;
 
-            // Simpan metadata ke DB
-            const { error: dbError } = await supabase.from('games').insert({
-                id: gameId,
-                title: formData.title,
-                description: formData.description,
-                base_path: `${gameId}/Build`,
-                loader_file: 'Build.loader.js',
-                framework_file: 'Build.framework.js.unityweb',
-                data_file: 'Build.data.unityweb',
-                code_file: 'Build.wasm.unityweb',
-                // thumbnail_url: thumbnailUrl,
-            });
+      alert("Game berhasil diunggah!");
+      window.location.href = `/game/${gameId}`;
+    } catch (err) {
+      console.error("Gagal upload game:", err.message);
+      alert("Terjadi kesalahan saat mengunggah game.");
+    }
+  };
 
-            if (dbError) throw dbError;
+  return (
+    <div className="submit-container">
+      <h1>Submit Game</h1>
+      <form onSubmit={handleSubmit}>
+        <label>Judul Game</label>
+        <input type="text" name="title" required onChange={handleChange} />
 
-            alert('Game berhasil diunggah!');
-            navigate(`/game/${gameId}`);
-        } catch (err) {
-            console.error('Gagal upload:', err.message);
-            alert('Gagal mengunggah game. Silakan coba lagi.');
-        }
-    };
+        <label>Deskripsi</label>
+        <textarea name="description" required rows="3" onChange={handleChange} />
 
-    return (
-        <div className="submit-container">
-            <h1>Submit Game Page</h1>
+        <label>File Build.loader.js</label>
+        <input type="file" name="loaderFile" accept=".js" required onChange={handleChange} />
 
-            <p className="tech-note">
-                🔧 Pastikan game Anda dibangun dengan <strong>Unity version 2022.3.4++</strong> dan menggunakan <strong>Compression Brotli</strong> untuk performa terbaik.
-            </p>
+        <label>File Build.data</label>
+        <input type="file" name="dataFile" accept=".data" required onChange={handleChange} />
 
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="title">Judul Game</label>
-                <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    required
-                    value={formData.title}
-                    onChange={handleChange}
-                />
+        <label>File Build.framework.js</label>
+        <input type="file" name="frameworkFile" accept=".js" required onChange={handleChange} />
 
-                <label htmlFor="description">Deskripsi Game</label>
-                <textarea
-                    id="description"
-                    name="description"
-                    required
-                    rows="4"
-                    value={formData.description}
-                    onChange={handleChange}
-                />
+        <label>File Build.wasm</label>
+        <input type="file" name="wasmFile" accept=".wasm" required onChange={handleChange} />
 
-                <label htmlFor="image">
-                    Gambar Game <span className="note">(Opsional)</span>
-                </label>
-                <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleChange}
-                />
-
-                <label htmlFor="dataFile">File .data</label>
-                <input
-                    type="file"
-                    id="dataFile"
-                    name="dataFile"
-                    accept=".data.unityweb"
-                    onChange={handleChange}
-                />
-
-                <label htmlFor="frameworkFile">File .framework.js</label>
-                <input
-                    type="file"
-                    id="frameworkFile"
-                    name="frameworkFile"
-                    accept=".framework.js.unityweb"
-                    onChange={handleChange}
-                />
-
-                <label htmlFor="loaderFile">File .loader</label>
-                <input
-                    type="file"
-                    id="loaderFile"
-                    name="loaderFile"
-                    accept=".loader.js"
-                    onChange={handleChange}
-                />
-
-                <label htmlFor="wasmFile">File .wasm</label>
-                <input
-                    type="file"
-                    id="wasmFile"
-                    name="wasmFile"
-                    accept=".wasm.unityweb"
-                    onChange={handleChange}
-                />
-
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    );
+        <button type="submit">Upload Game</button>
+      </form>
+    </div>
+  );
 };
 
 export default SubmitGamePage;
