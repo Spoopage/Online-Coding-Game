@@ -1,8 +1,16 @@
 // src/pages/SubmitGamePage.jsx
 import { useState } from 'react';
+import { supabase } from '../supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router-dom';
 import './SubmitGamePage.css';
+import { uploadToStorage } from '../utils/uploadToStorage';
 
 const SubmitGamePage = () => {
+    const navigate = useNavigate();
+    const gameId = uuidv4();
+    const basePath = `${gameId}/Build`;
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -15,24 +23,52 @@ const SubmitGamePage = () => {
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        if (name === 'image') {
-            setFormData({ ...formData, image: files[0] });
-        } else if (name === 'dataFile') {
-            setFormData({ ...formData, dataFile: files[0] });
-        } else if (name === 'frameworkFile') {
-            setFormData({ ...formData, frameworkFile: files[0] });
-        } else if (name === 'loaderFile') {
-            setFormData({ ...formData, loaderFile: files[0] });
-        } else if (name === 'wasmFile') {
-            setFormData({ ...formData, wasmFile: files[0] });
+        if (files) {
+            setFormData({ ...formData, [name]: files[0] });
         } else {
             setFormData({ ...formData, [name]: value });
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
+        const gameId = uuidv4();
+        const buildFolder = `${gameId}/Build`;
+        let thumbnailUrl = null;
+
+        try {
+            // Upload Unity build files
+            await uploadToStorage(formData.loaderFile, buildFolder, 'Build.loader.js');
+            await uploadToStorage(formData.frameworkFile, buildFolder, 'Build.framework.js.unityweb');
+            await uploadToStorage(formData.dataFile, buildFolder, 'Build.data.unityweb');
+            await uploadToStorage(formData.wasmFile, buildFolder, 'Build.wasm.unityweb');
+
+            // Upload optional thumbnail
+            if (formData.image) {
+                thumbnailUrl = await uploadToStorage(formData.image, gameId, 'thumbnail.png');
+            }
+
+            // Simpan metadata ke DB
+            const { error: dbError } = await supabase.from('games').insert({
+                id: gameId,
+                title: formData.title,
+                description: formData.description,
+                base_path: `${gameId}/Build`,
+                loader_file: 'Build.loader.js',
+                framework_file: 'Build.framework.js.unityweb',
+                data_file: 'Build.data.unityweb',
+                code_file: 'Build.wasm.unityweb',
+                // thumbnail_url: thumbnailUrl,
+            });
+
+            if (dbError) throw dbError;
+
+            alert('Game berhasil diunggah!');
+            navigate(`/game/${gameId}`);
+        } catch (err) {
+            console.error('Gagal upload:', err.message);
+            alert('Gagal mengunggah game. Silakan coba lagi.');
+        }
     };
 
     return (
@@ -80,7 +116,7 @@ const SubmitGamePage = () => {
                     type="file"
                     id="dataFile"
                     name="dataFile"
-                    accept=".data"
+                    accept=".data.unityweb"
                     onChange={handleChange}
                 />
 
@@ -89,7 +125,7 @@ const SubmitGamePage = () => {
                     type="file"
                     id="frameworkFile"
                     name="frameworkFile"
-                    accept=".framework.js"
+                    accept=".framework.js.unityweb"
                     onChange={handleChange}
                 />
 
@@ -98,7 +134,7 @@ const SubmitGamePage = () => {
                     type="file"
                     id="loaderFile"
                     name="loaderFile"
-                    accept=".loader"
+                    accept=".loader.js"
                     onChange={handleChange}
                 />
 
@@ -107,7 +143,7 @@ const SubmitGamePage = () => {
                     type="file"
                     id="wasmFile"
                     name="wasmFile"
-                    accept=".wasm"
+                    accept=".wasm.unityweb"
                     onChange={handleChange}
                 />
 

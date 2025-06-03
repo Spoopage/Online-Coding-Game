@@ -11,6 +11,7 @@ import Navbar from "./components/Navbar";
 import { supabase } from './supabaseClient';
 import AuthForm from './pages/auth/AuthForm';
 import { useSessionAndRole } from './pages/auth/useSessionAndRole';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [profile, setProfile] = useState([]);
@@ -62,8 +63,8 @@ function App() {
   return (
     <Router>
       <Navbar />
-        {/* Supabase Auth Testing */}
-        {/* <div>
+      {/* Supabase Auth Testing */}
+      {/* <div>
           <h1>Halo, {session.user.email}</h1>
           <p>Role kamu: {role}</p>
 
@@ -86,8 +87,15 @@ function App() {
         {/* Kalau sudah login */}
         {session && (
           <>
-            <Route path="/" element={<Homepage />} />
+            <Route path="/" element={<Homepage />} />       
             <Route path="/game" element={<GamePage />} />
+
+            <Route path="/game/:gameId" element={
+              <ErrorBoundary>
+                <GamePage />
+              </ErrorBoundary>
+            } />
+
             <Route path="/submit" element={<SubmitGamePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
