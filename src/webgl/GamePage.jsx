@@ -1,32 +1,54 @@
-import React from "react";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
+import { supabase } from "../supabaseClient";
+
+function GamePlayer({ game }) {
+  const { unityProvider, isLoaded, loadingProgression } = useUnityContext({
+    loaderUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.loader_file}`,
+    dataUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.data_file}`,
+    frameworkUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.framework_file}`,
+    codeUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.code_file}`,
+  });
+
+  return (
+    <div>
+      <h2>{game.title}</h2>
+      {!isLoaded && (
+        <p style={{ padding: "1rem" }}>
+          Loading Unity... {Math.round(loadingProgression * 100)}%
+        </p>
+      )}
+      <Unity unityProvider={unityProvider} style={{ width: "100%", height: "600px" }} />
+    </div>
+  );
+}
 
 function GamePage() {
-    const { unityProvider } = useUnityContext({
-        loaderUrl: "build/webgl/Build.loader.js",
-        dataUrl: "build/webgl/Build.data.unityweb",
-        frameworkUrl: "build/webgl/Build.framework.js.unityweb",
-        codeUrl: "build/webgl/Build.wasm.unityweb",
-    });
+  const { gameId } = useParams();
+  const [game, setGame] = useState(null);
 
-    return (
-        <div style={{ width: "100vw", height: "100vh", backgroundColor: "#fff" }}>
-            <h1 style={{ textAlign: "center", marginTop: "1rem" }}>This is game page</h1>
+  useEffect(() => {
+    const fetchGame = async () => {
+      const { data, error } = await supabase
+        .from("games")
+        .select("*")
+        .eq("id", gameId)
+        .single();
 
-            <div
-                style={{
-                    width: 1280,
-                    height: 720,
-                    position: "fixed",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: "#000", // optional, biar kontras
-                }}
-            >
-                <Unity unityProvider={unityProvider} style={{ width: 800, height: 600 }} />
-            </div>
-        </div>
-    );
+      if (error) {
+        console.error("Failed to fetch game:", error);
+      } else {
+        setGame(data);
+      }
+    };
+
+    if (gameId) fetchGame();
+  }, [gameId]);
+
+  if (!game) return <p style={{ padding: "2rem" }}>Loading game data...</p>;
+
+  return <GamePlayer game={game} />;
 }
+
 export default GamePage;
