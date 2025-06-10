@@ -3,30 +3,11 @@ import { useEffect, useState } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { supabase } from "../supabaseClient";
 
-function GamePlayer({ game }) {
-  const { unityProvider, isLoaded, loadingProgression } = useUnityContext({
-    loaderUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.loader_file}`,
-    dataUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.data_file}`,
-    frameworkUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.framework_file}`,
-    codeUrl: `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${game.base_path}/${game.code_file}`,
-  });
-
-  return (
-    <div>
-      <h2>{game.title}</h2>
-      {!isLoaded && (
-        <p style={{ padding: "1rem" }}>
-          Loading Unity... {Math.round(loadingProgression * 100)}%
-        </p>
-      )}
-      <Unity unityProvider={unityProvider} style={{ width: "100%", height: "600px" }} />
-    </div>
-  );
-}
-
 function GamePage() {
   const { gameId } = useParams();
   const [game, setGame] = useState(null);
+
+  const [unityConfig, setUnityConfig] = useState(null);
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -37,18 +18,60 @@ function GamePage() {
         .single();
 
       if (error) {
-        console.error("Failed to fetch game:", error);
+        console.error("❌ Failed to fetch game:", error);
       } else {
         setGame(data);
+
+        if (data.submit_type === "upload") {
+          const base = `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${data.base_path}`;
+          setUnityConfig({
+            loaderUrl: `${base}/${data.loader_file}`,
+            dataUrl: `${base}/${data.data_file}`,
+            frameworkUrl: `${base}/${data.framework_file}`,
+            codeUrl: `${base}/${data.code_file}`,
+          });
+        }
       }
     };
 
     if (gameId) fetchGame();
   }, [gameId]);
 
-  if (!game) return <p style={{ padding: "2rem" }}>Loading game data...</p>;
+  const { unityProvider } = useUnityContext(unityConfig || {});
 
-  return <GamePlayer game={game} />;
+  if (!game) return <p style={{ padding: "2rem" }}>Loading game...</p>;
+
+  return (
+    <div style={{ padding: "2rem" }}>
+      <h2>{game.title}</h2>
+      <p>{game.description}</p>
+
+      {game.submit_type === "upload" && unityConfig && (
+        <Unity
+          unityProvider={unityProvider}
+          style={{ width: "100%", height: "600px", background: "#000" }}
+        />
+      )}
+
+      {game.submit_type === "url" && game.external_url && (
+        <iframe
+          src={game.external_url}
+          title={game.title}
+          width="100%"
+          height="600px"
+          frameBorder="0"
+          allowFullScreen
+        />
+      )}
+
+      {game.submit_type === "iframe" && game.iframe_embed && (
+        <div
+          dangerouslySetInnerHTML={{ __html: game.iframe_embed }}
+          style={{ width: "100%", minHeight: "600px" }}
+        />
+      )}
+    </div>
+  );
 }
 
 export default GamePage;

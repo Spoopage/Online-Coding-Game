@@ -1,101 +1,141 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
-import "./SubmitGamePage.css";
 
-const SubmitGamePage = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    image: null,
-    loaderFile: null,
-    dataFile: null,
-    frameworkFile: null,
-    wasmFile: null,
-  });
+function SubmitGamePage() {
+  const [submitType, setSubmitType] = useState("upload"); // upload | url | iframe
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [externalUrl, setExternalUrl] = useState("");
+  const [iframeUrl, setIframeUrl] = useState("");
+  const [files, setFiles] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+  const handleFileChange = (e) => {
+    setFiles({ ...files, [e.target.name]: e.target.files[0] });
+  };
+
+  const uploadFileToSupabase = async (file, path) => {
+    const { error } = await supabase.storage.from("games").upload(path, file);
+    if (error) throw error;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const gameId = uuidv4(); // ID unik untuk game
-    const basePath = `${gameId}/Build`;
-
-    const uploads = [
-      { name: "loader_file", file: formData.loaderFile, filename: "Build.loader.js" },
-      { name: "data_file", file: formData.dataFile, filename: "Build.data" },
-      { name: "framework_file", file: formData.frameworkFile, filename: "Build.framework.js" },
-      { name: "code_file", file: formData.wasmFile, filename: "Build.wasm" },
-    ];
+    setLoading(true);
+    const gameId = uuidv4();
 
     try {
-      // Upload setiap file ke Supabase Storage
-      for (const item of uploads) {
-        const { error } = await supabase.storage
-          .from("games")
-          .upload(`${basePath}/${item.filename}`, item.file);
+      if (submitType === "upload") {
+        const basePath = `${gameId}/Build`;
+        await Promise.all([
+          uploadFileToSupabase(files.loader, `${basePath}/${files.loader.name}`),
+          uploadFileToSupabase(files.framework, `${basePath}/${files.framework.name}`),
+          uploadFileToSupabase(files.data, `${basePath}/${files.data.name}`),
+          uploadFileToSupabase(files.code, `${basePath}/${files.code.name}`)
+        ]);
 
-        if (error) throw new Error(`Upload gagal: ${item.filename}`);
+        await supabase.from("games").insert({
+          id: gameId,
+          title,
+          description,
+          submit_type: "upload",
+          base_path: basePath,
+          loader_file: files.loader.name,
+          framework_file: files.framework.name,
+          data_file: files.data.name,
+          code_file: files.code.name
+        });
+      } else if (submitType === "url") {
+        await supabase.from("games").insert({
+          id: gameId,
+          title,
+          description,
+          submit_type: "url",
+          external_loader_url: externalUrl
+        });
+      } else if (submitType === "iframe") {
+        await supabase.from("games").insert({
+          id: gameId,
+          title,
+          description,
+          submit_type: "iframe",
+          iframe_embed_url: iframeUrl
+        });
       }
 
-      // Simpan metadata game ke database
-      const { error: insertError } = await supabase.from("games").insert([
-        {
-          id: gameId,
-          title: formData.title,
-          description: formData.description,
-          base_path: basePath,
-          loader_file: "Build.loader.js",
-          data_file: "Build.data",
-          framework_file: "Build.framework.js",
-          code_file: "Build.wasm",
-        },
-      ]);
-
-      if (insertError) throw insertError;
-
-      alert("Game berhasil diunggah!");
-      window.location.href = `/game/${gameId}`;
+      alert("Game submitted successfully!");
     } catch (err) {
-      console.error("Gagal upload game:", err.message);
-      alert("Terjadi kesalahan saat mengunggah game.");
+      console.error("Error submitting game:", err);
+      alert("Submission failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="submit-container">
-      <h1>Submit Game</h1>
+    <div className="submit-game-page">
+      <h2>Submit Game</h2>
       <form onSubmit={handleSubmit}>
-        <label>Judul Game</label>
-        <input type="text" name="title" required onChange={handleChange} />
+        <label>Title</label>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
 
-        <label>Deskripsi</label>
-        <textarea name="description" required rows="3" onChange={handleChange} />
+        <label>Description</label>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
 
-        <label>File Build.loader.js</label>
-        <input type="file" name="loaderFile" accept=".js" required onChange={handleChange} />
+        <label>Submit Method</label>
+        <select value={submitType} onChange={(e) => setSubmitType(e.target.value)}>
+          <option value="upload">Upload Files</option>
+          <option value="url">From External URL</option>
+          <option value="iframe">Embed via iframe</option>
+        </select>
 
-        <label>File Build.data</label>
-        <input type="file" name="dataFile" accept=".data" required onChange={handleChange} />
+        {submitType === "upload" && (
+          <div className="file-inputs">
+            <label>Loader File</label>
+            <input type="file" name="loader" onChange={handleFileChange} required />
 
-        <label>File Build.framework.js</label>
-        <input type="file" name="frameworkFile" accept=".js" required onChange={handleChange} />
+            <label>Framework File</label>
+            <input type="file" name="framework" onChange={handleFileChange} required />
 
-        <label>File Build.wasm</label>
-        <input type="file" name="wasmFile" accept=".wasm" required onChange={handleChange} />
+            <label>Data File</label>
+            <input type="file" name="data" onChange={handleFileChange} required />
 
-        <button type="submit">Upload Game</button>
+            <label>Code File (wasm)</label>
+            <input type="file" name="code" onChange={handleFileChange} required />
+          </div>
+        )}
+
+        {submitType === "url" && (
+          <>
+            <label>Loader URL</label>
+            <input
+              type="url"
+              value={externalUrl}
+              onChange={(e) => setExternalUrl(e.target.value)}
+              required
+            />
+          </>
+        )}
+
+        {submitType === "iframe" && (
+          <>
+            <label>iframe Embed URL</label>
+            <input
+              type="url"
+              value={iframeUrl}
+              onChange={(e) => setIframeUrl(e.target.value)}
+              required
+            />
+          </>
+        )}
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Submitting..." : "Submit Game"}
+        </button>
       </form>
     </div>
   );
-};
+}
 
 export default SubmitGamePage;
