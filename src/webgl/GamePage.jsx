@@ -1,13 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Unity, useUnityContext } from "react-unity-webgl";
 import { supabase } from "../supabaseClient";
+import UnityPlayer from "./UnityPlayer"; // ⬅️ Komponen baru kita buat
 
 function GamePage() {
   const { gameId } = useParams();
   const [game, setGame] = useState(null);
-
-  const [unityConfig, setUnityConfig] = useState(null);
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -21,23 +19,11 @@ function GamePage() {
         console.error("❌ Failed to fetch game:", error);
       } else {
         setGame(data);
-
-        if (data.submit_type === "upload") {
-          const base = `https://xqdoichemmpgqcdfixqn.supabase.co/storage/v1/object/public/games/${data.base_path}`;
-          setUnityConfig({
-            loaderUrl: `${base}/${data.loader_file}`,
-            dataUrl: `${base}/${data.data_file}`,
-            frameworkUrl: `${base}/${data.framework_file}`,
-            codeUrl: `${base}/${data.code_file}`,
-          });
-        }
       }
     };
 
     if (gameId) fetchGame();
   }, [gameId]);
-
-  const { unityProvider } = useUnityContext(unityConfig || {});
 
   if (!game) return <p style={{ padding: "2rem" }}>Loading game...</p>;
 
@@ -46,11 +32,8 @@ function GamePage() {
       <h2>{game.title}</h2>
       <p>{game.description}</p>
 
-      {game.submit_type === "upload" && unityConfig && (
-        <Unity
-          unityProvider={unityProvider}
-          style={{ width: "100%", height: "600px", background: "#000" }}
-        />
+      {game.submit_type === "upload" && (
+        <UnityPlayer game={game} />
       )}
 
       {game.submit_type === "url" && game.external_url && (
