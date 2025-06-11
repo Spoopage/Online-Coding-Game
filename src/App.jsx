@@ -12,6 +12,7 @@ import { supabase } from './supabaseClient';
 import AuthForm from './pages/auth/AuthForm';
 import { useSessionAndRole } from './pages/auth/useSessionAndRole';
 import ErrorBoundary from './components/ErrorBoundary';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   const [profile, setProfile] = useState([]);
@@ -73,33 +74,38 @@ function App() {
           <button onClick={() => supabase.auth.signOut()}>Logout</button>
         </div>   */}
       <Routes>
-        {/* Kalau belum login */}
+        {/* Tanpa login */}
         {!session && (
           <>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="*" element={<Login />} />
-            {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
           </>
         )}
 
-        {/* Kalau sudah login */}
-        {session && (
+        {/* Login sebagai admin */}
+        {session && role === "admin" && (
           <>
-            <Route path="/" element={<Homepage />} />       
-            <Route path="/game" element={<GamePage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="*" element={<AdminDashboard />} />
+          </>
+        )}
 
+        {/* Login sebagai user biasa */}
+        {session && role !== "admin" && (
+          <>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/game" element={<GamePage />} />
             <Route path="/game/:gameId" element={
               <ErrorBoundary>
                 <GamePage />
               </ErrorBoundary>
             } />
-
             <Route path="/submit" element={<SubmitGamePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+            <Route path="*" element={<Homepage />} />
           </>
         )}
       </Routes>
