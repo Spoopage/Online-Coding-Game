@@ -1,11 +1,20 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import UnityPlayer from "./UnityPlayer"; // ⬅️ Komponen baru kita buat
+import UnityPlayer from "../pages/UnityPlayer.jsx"; // ⬅️ Komponen baru kita buat
 
 function GamePage() {
   const { gameId } = useParams();
   const [game, setGame] = useState(null);
+
+  const isValidURL = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }; 
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -36,14 +45,16 @@ function GamePage() {
         <UnityPlayer game={game} />
       )}
 
-      {game.submit_type === "url" && game.external_url && (
+      {game.submit_type === "url" && game.url && (
         <iframe
-          src={game.external_url}
+          src={game.url}
           title={game.title}
           width="100%"
-          height="600px"
+          height="600px"  
           frameBorder="0"
           allowFullScreen
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"
         />
       )}
 
