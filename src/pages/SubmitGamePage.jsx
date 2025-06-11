@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
 
@@ -6,10 +6,15 @@ function SubmitGamePage() {
   const [submitType, setSubmitType] = useState("upload"); // upload | url | iframe
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [externalUrl, setExternalUrl] = useState("");
+  const [url, setExternalUrl] = useState("");
   const [iframeUrl, setIframeUrl] = useState("");
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Reset files state when submitType changes
+  useEffect(() => {
+    setFiles({}); // Reset the files state when submitType changes
+  }, [submitType]);
 
   const handleFileChange = (e) => {
     setFiles({ ...files, [e.target.name]: e.target.files[0] });
@@ -35,7 +40,7 @@ function SubmitGamePage() {
           uploadFileToSupabase(files.code, `${basePath}/${files.code.name}`)
         ]);
 
-        await supabase.from("games").insert({
+        const { error: insertError } = await supabase.from("games").insert({
           id: gameId,
           title,
           description,
@@ -46,32 +51,41 @@ function SubmitGamePage() {
           data_file: files.data.name,
           code_file: files.code.name
         });
+
+        if (insertError) throw insertError;
+
       } else if (submitType === "url") {
-        await supabase.from("games").insert({
+        const { error: insertError } = await supabase.from("games").insert({
           id: gameId,
           title,
           description,
           submit_type: "url",
-          external_loader_url: externalUrl
+          url: url
         });
+
+        if (insertError) throw insertError;
+
       } else if (submitType === "iframe") {
-        await supabase.from("games").insert({
+        const { error: insertError } = await supabase.from("games").insert({
           id: gameId,
           title,
           description,
           submit_type: "iframe",
-          iframe_embed_url: iframeUrl
+          iframe_embed: iframeUrl
         });
+
+        if (insertError) throw insertError;
       }
 
       alert("Game submitted successfully!");
     } catch (err) {
-      console.error("Error submitting game:", err);
+      console.error("❌ Error submitting game:", err);
       alert("Submission failed.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="submit-game-page">
@@ -111,7 +125,7 @@ function SubmitGamePage() {
             <label>Loader URL</label>
             <input
               type="url"
-              value={externalUrl}
+              value={url}
               onChange={(e) => setExternalUrl(e.target.value)}
               required
             />
