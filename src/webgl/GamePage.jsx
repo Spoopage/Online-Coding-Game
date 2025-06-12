@@ -49,8 +49,8 @@ function GamePage() {
         <iframe
           src={game.url}
           title={game.title}
-          width="100%"
-          height="600px"  
+          width="1080px"
+          height="720px"  
           frameBorder="0"
           allowFullScreen
           loading="lazy"
@@ -61,7 +61,7 @@ function GamePage() {
       {game.submit_type === "iframe" && game.iframe_embed && (
         <div
           dangerouslySetInnerHTML={{ __html: game.iframe_embed }}
-          style={{ width: "100%", minHeight: "600px" }}
+          style={{ width: "1080px", minHeight: "720px" }}
         />
       )}
     </div>
