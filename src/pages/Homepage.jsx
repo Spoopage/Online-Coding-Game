@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { getPublicUrl } from "../utils/getPublicUrl";
+import placeholder from "../images/placeholder.png"; // Add this import
 import "./Homepage.css";
 
 function Homepage() {
@@ -51,11 +52,11 @@ function Homepage() {
                     <Link to={`/game/${game.id}`}>
                       <div className="game-thumbnail">
                         <img
-                          src={thumbnail || "/placeholder.png"}
+                          src={thumbnail || placeholder} // Use the imported placeholder
                           alt={game.title}
                           className="thumbnail-image"
                           onError={(e) => {
-                            e.target.src = "/placeholder.png";
+                            e.target.src = placeholder; // Fallback to local placeholder
                           }}
                         />
                       </div>
