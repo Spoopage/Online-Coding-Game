@@ -5,7 +5,7 @@ import { supabase } from "../supabaseClient";
 import { useSessionAndRole } from "../pages/auth/useSessionAndRole";
 
 function Navbar() {
-  const { session } = useSessionAndRole();
+  const { session, role } = useSessionAndRole();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -18,16 +18,17 @@ function Navbar() {
       <div className="nav-title">
         <Link to="/" className="nav-link">O C G</Link>
       </div>
-      <div className="nav-buttons">
-        <Link to="/submit" className="nav-link">Submit</Link>
-        {!session ? (
-          <Link to="/login" className="nav-link">Login</Link>
-        ) : (
+
+      {session && (
+        <div className="nav-buttons">
+          {role !== "admin" && (
+            <Link to="/submit" className="nav-link">SUBMIT</Link>
+          )}
           <button onClick={handleLogout} className="nav-link logout-button">
-            Logout
+            LOGOUT
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

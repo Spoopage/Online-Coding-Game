@@ -6,6 +6,7 @@ import './Auth.css';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -14,6 +15,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const { email, password } = formData;
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -21,40 +23,50 @@ function Login() {
       password
     });
 
+    setIsLoading(false);
+    
     if (error) {
-      alert('Login gagal: ' + error.message);
+      alert('Login failed: ' + error.message);
     } else {
-      navigate('/')
+      navigate('/');
     }
   };
 
   return (
-    <div className="auth-container">
-      <h2>LOGIN</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          className="auth-input"
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="auth-input"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit" className="auth-button">Masuk</button>
-      </form>
-      <p style={{ marginTop: '15px' }}>
-        Belum punya akun? <Link to="/signup" className="auth-link">Sign Up</Link>
-      </p>
+    <div className="auth-wrapper">
+      <div className="auth-container">
+        <h2>LOGIN</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            className="auth-input"
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="auth-input"
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <button 
+            type="submit" 
+            className="auth-button"
+            disabled={isLoading}
+          >
+            {isLoading ? 'LOADING...' : 'ENTER GAME'}
+          </button>
+        </form>
+        <p style={{ marginTop: '20px', textAlign: 'center' }}>
+          Don't have an account? <Link to="/signup" className="auth-link">Join Now</Link>
+        </p>
+      </div>
     </div>
   );
 }
