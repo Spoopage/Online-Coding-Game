@@ -1,4 +1,4 @@
-/* Homepage - Dark Purple Gaming Theme (Text-only version) */
+/* Homepage - Dark Purple Gaming Theme */
 .homepage-container {
   padding: 30px 5%;
   color: #fff;
@@ -71,28 +71,28 @@
   scroll-behavior: smooth;
   gap: 25px;
   padding: 20px 10px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
 .game-carousel::-webkit-scrollbar {
-  display: none;
+  display: none; /* Chrome/Safari */
 }
 
 .game-card {
-  min-width: 250px;
-  height: 200px;
+  min-width: 300px;
+  height: 350px;
   background: rgba(30, 14, 47, 0.7);
+  text-align: center;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(123, 31, 162, 0.3);
-  padding: 20px;
+  padding: 15px;
   flex-shrink: 0;
   color: white;
   transition: all 0.3s ease;
   border: 1px solid rgba(156, 39, 176, 0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .game-card:hover {
@@ -100,38 +100,75 @@
   box-shadow: 0 10px 30px rgba(156, 39, 176, 0.5);
 }
 
-.game-link {
-  text-decoration: none;
-  color: inherit;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(156, 39, 176, 0.1) 0%,
+    rgba(156, 39, 176, 0) 50%,
+    rgba(156, 39, 176, 0.1) 100%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
 }
 
 .game-card h3 {
   font-family: 'Oxanium', sans-serif;
-  font-size: 1.3rem;
-  margin-bottom: 10px;
+  margin: 15px 0 5px;
+  font-size: 1.2rem;
   color: #e1bee7;
   text-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
 }
 
-.game-author {
-  color: #ba68c8;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
+.game-thumbnail {
+  height: 250px;
+  background: rgba(45, 21, 68, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(156, 39, 176, 0.3);
 }
 
-.game-description {
-  color: #d0d0ff;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.game-thumbnail:hover {
+  background: rgba(156, 39, 176, 0.3);
+  box-shadow: 0 0 20px rgba(156, 39, 176, 0.4);
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.game-thumbnail:hover .thumbnail-image {
+  transform: scale(1.05);
+}
+
+/* Placeholder styling */
+.game-thumbnail::before {
+  content: 'No Thumbnail';
+  position: absolute;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  display: none;
+}
+
+.game-thumbnail:empty::before {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 /* Responsive Adjustments */
@@ -145,9 +182,12 @@
   }
   
   .game-card {
-    min-width: 200px;
-    height: 180px;
-    padding: 15px;
+    min-width: 250px;
+    height: 300px;
+  }
+  
+  .game-thumbnail {
+    height: 200px;
   }
   
   .scroll-btn {
@@ -163,13 +203,12 @@
   }
   
   .game-card {
-    min-width: 160px;
-    height: 160px;
-    padding: 12px;
+    min-width: 200px;
+    height: 250px;
   }
   
-  .game-card h3 {
-    font-size: 1.1rem;
+  .game-thumbnail {
+    height: 160px;
   }
   
   .scroll-btn {
