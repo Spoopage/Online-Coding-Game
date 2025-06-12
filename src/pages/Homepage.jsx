@@ -26,7 +26,6 @@ function Homepage() {
       if (error) {
         console.error("Error fetching games:", error);
       } else {
-        console.log("Fetched games:", data); // debug
         setGames(data);
       }
     };
@@ -36,9 +35,11 @@ function Homepage() {
 
   return (
     <div className="homepage-container">
-      <h2 className="section-title">🎮 Game Terbaru</h2>
+      <h2 className="section-title">Latest Games</h2>
       <div className="game-scroll-section">
-        <button className="scroll-btn" onClick={scrollLeft}>←</button>
+        <button className="scroll-btn" onClick={scrollLeft} aria-label="Scroll left">
+          ←
+        </button>
         <div className="game-carousel" ref={scrollRef}>
           {games?.length > 0 &&
             games
@@ -53,16 +54,21 @@ function Homepage() {
                           src={thumbnail || "/placeholder.png"}
                           alt={game.title}
                           className="thumbnail-image"
+                          onError={(e) => {
+                            e.target.src = "/placeholder.png";
+                          }}
                         />
                       </div>
                     </Link>
                     <h3>{game.title}</h3>
+                    <p>{game.author}</p>
                   </div>
                 );
               })}
-
         </div>
-        <button className="scroll-btn" onClick={scrollRight}>→</button>
+        <button className="scroll-btn" onClick={scrollRight} aria-label="Scroll right">
+          →
+        </button>
       </div>
     </div>
   );

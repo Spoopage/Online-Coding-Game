@@ -1,88 +1,220 @@
+/* Homepage - Dark Purple Gaming Theme */
 .homepage-container {
-    padding: 0;
-    margin: 0;
-    font-family: sans-serif;
-  }
+  padding: 30px 5%;
+  color: #fff;
+  background: radial-gradient(circle at center, #1a0522 0%, #0d0413 100%);
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Oxanium', 'Segoe UI', sans-serif;
+}
 
-  .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 96%;
-    background-color: #0a0f24;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    z-index: 1000;
-  }  
-  
-  .nav-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+.section-title {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  background: linear-gradient(90deg, #9c27b0, #7b1fa2, #4a148c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
+  letter-spacing: 1px;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #9c27b0, transparent);
+}
+
+.game-scroll-section {
+  display: flex;
+  align-items: center;
+  margin: 40px 0;
+  position: relative;
+}
+
+.scroll-btn {
+  font-size: 2.5rem;
+  background: rgba(156, 39, 176, 0.2);
+  color: #e1bee7;
+  border: none;
+  cursor: pointer;
+  padding: 0 15px;
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 0 15px rgba(123, 31, 162, 0.3);
+}
+
+.scroll-btn:hover {
+  background: rgba(156, 39, 176, 0.4);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.game-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 25px;
+  padding: 20px 10px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.game-carousel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.game-card {
+  min-width: 300px;
+  height: 350px;
+  background: rgba(30, 14, 47, 0.7);
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(123, 31, 162, 0.3);
+  padding: 15px;
+  flex-shrink: 0;
+  color: white;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(156, 39, 176, 0.5);
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(156, 39, 176, 0.1) 0%,
+    rgba(156, 39, 176, 0) 50%,
+    rgba(156, 39, 176, 0.1) 100%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.game-card h3 {
+  font-family: 'Oxanium', sans-serif;
+  margin: 15px 0 5px;
+  font-size: 1.2rem;
+  color: #e1bee7;
+  text-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
+}
+
+.game-thumbnail {
+  height: 250px;
+  background: rgba(45, 21, 68, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.game-thumbnail:hover {
+  background: rgba(156, 39, 176, 0.3);
+  box-shadow: 0 0 20px rgba(156, 39, 176, 0.4);
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.game-thumbnail:hover .thumbnail-image {
+  transform: scale(1.05);
+}
+
+/* Placeholder styling */
+.game-thumbnail::before {
+  content: 'No Thumbnail';
+  position: absolute;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  display: none;
+}
+
+.game-thumbnail:empty::before {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .homepage-container {
+    padding: 20px 15px;
   }
   
-  .nav-login {
-    cursor: pointer;
-    transition: color 0.3s ease;
+  .section-title {
+    font-size: 1.8rem;
   }
   
-  .nav-login:hover {
-    color: #6c6c6c;
+  .game-card {
+    min-width: 250px;
+    height: 300px;
   }
   
-  .game-scroll-section {
-    display: flex;
-    align-items: center;
-    margin-top: 2rem;
-    padding: 0 1rem;
+  .game-thumbnail {
+    height: 200px;
   }
   
   .scroll-btn {
     font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0 1rem;
+    height: 50px;
+    width: 50px;
   }
-  
-  .game-carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 1rem;
-    padding: 1rem 0;
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.5rem;
   }
   
   .game-card {
-    min-width: 500px;
+    min-width: 200px;
     height: 250px;
-    background-color: #1e1e2f;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-    padding: 1rem;
-    flex-shrink: 0;
-    color: white;
-    font-family: 'Segoe UI', sans-serif;
   }
   
-
   .game-thumbnail {
-    height: 200px;
-    background-color: #2d2d44;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 6px;
-    margin-top: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    color: #fff;
+    height: 160px;
   }
   
-  .game-thumbnail:hover {
-    background-color: #4c6ef5;
+  .scroll-btn {
+    font-size: 1.8rem;
+    height: 40px;
+    width: 40px;
+    padding: 0 10px;
   }
-  
+}

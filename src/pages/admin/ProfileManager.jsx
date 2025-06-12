@@ -6,7 +6,7 @@ function ProfileManager() {
 
   const fetchProfiles = async () => {
     const { data, error } = await supabase.from('profiles').select('*');
-    if (error) console.error('Gagal fetch profiles:', error.message);
+    if (error) console.error('Failed to fetch profiles:', error.message);
     else setProfiles(data);
   };
 
@@ -22,13 +22,13 @@ function ProfileManager() {
   return (
     <div>
       <h2>Profile Manager</h2>
-      <table border="1" cellPadding="8">
+      <table className="admin-table">
         <thead>
           <tr>
             <th>Email</th>
             <th>Username</th>
             <th>Role</th>
-            <th>Aksi</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@ function ProfileManager() {
               <td>{p.username}</td>
               <td>{p.role}</td>
               <td>
-                <button onClick={() => deleteProfile(p.id)}>Hapus</button>
+                <button className="admin-button" onClick={() => deleteProfile(p.id)}>Delete</button>
               </td>
             </tr>
           ))}

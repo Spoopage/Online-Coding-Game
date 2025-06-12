@@ -13,7 +13,7 @@ function GameManager() {
 
   const fetchGames = async () => {
     const { data, error } = await supabase.from('games').select('*');
-    if (error) console.error('Gagal fetch games:', error.message);
+    if (error) console.error('Failed to fetch games:', error.message);
     else setGames(data);
   };
 
@@ -23,7 +23,7 @@ function GameManager() {
 
   const createGame = async () => {
     const { error } = await supabase.from('games').insert([form]);
-    if (error) console.error('Insert gagal:', error.message);
+    if (error) console.error('Insert failed:', error.message);
     else {
       setForm({ title: '', author: '', description: '', submit_type: '', url: '' });
       fetchGames();
@@ -36,7 +36,7 @@ function GameManager() {
   };
 
   const updateGameTitle = async (id) => {
-    const newTitle = prompt('Update Judul Game:');
+    const newTitle = prompt('Update Game Title:');
     if (newTitle) {
       await supabase.from('games').update({ title: newTitle }).eq('id', id);
       fetchGames();
@@ -50,25 +50,75 @@ function GameManager() {
   return (
     <div>
       <h2>Game Manager</h2>
-      <div style={{ marginBottom: '10px' }}>
-        <input name="title" placeholder="Judul" value={form.title} onChange={handleChange} />
-        <input name="author" placeholder="Author" value={form.author} onChange={handleChange} />
-        <input name="description" placeholder="Deskripsi" value={form.description} onChange={handleChange} />
-        <input name="submit_type" placeholder="Submit Type" value={form.submit_type} onChange={handleChange} />
-        <input name="url" placeholder="Game URL (opsional)" value={form.url} onChange={handleChange} />
-        <button onClick={createGame}>Tambah Game</button>
+      
+      <div className="form-container">
+        <div className="form-row">
+          <div className="form-group">
+            <input 
+              className="admin-input"
+              name="title" 
+              placeholder="Title" 
+              value={form.title} 
+              onChange={handleChange} 
+            />
+          </div>
+          <div className="form-group">
+            <input 
+              className="admin-input"
+              name="author" 
+              placeholder="Author" 
+              value={form.author} 
+              onChange={handleChange} 
+            />
+          </div>
+        </div>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <input 
+              className="admin-input"
+              name="description" 
+              placeholder="Description" 
+              value={form.description} 
+              onChange={handleChange} 
+            />
+          </div>
+          <div className="form-group">
+            <input 
+              className="admin-input"
+              name="submit_type" 
+              placeholder="Submit Type" 
+              value={form.submit_type} 
+              onChange={handleChange} 
+            />
+          </div>
+        </div>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <input 
+              className="admin-input"
+              name="url" 
+              placeholder="Game URL (optional)" 
+              value={form.url} 
+              onChange={handleChange} 
+            />
+          </div>
+        </div>
+        
+        <button className="admin-button" onClick={createGame}>Add Game</button>
       </div>
 
-      <table border="1" cellPadding="8">
+      <table className="admin-table">
         <thead>
           <tr>
-            <th>Judul</th>
+            <th>Title</th>
             <th>Author</th>
-            <th>Deskripsi</th>
+            <th>Description</th>
             <th>Submit Type</th>
-            <th>Detail</th>
+            <th>Details</th>
             <th>Created At</th>
-            <th>Aksi</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -80,7 +130,7 @@ function GameManager() {
               <td>{g.submit_type}</td>
               <td>
                 {g.submit_type === 'url' ? (
-                  <a href={g.url} target="_blank" rel="noreferrer">Lihat URL</a>
+                  <a href={g.url} target="_blank" rel="noreferrer">View URL</a>
                 ) : (
                   <div style={{ textAlign: 'left' }}>
                     <div><strong>Framework:</strong> {g.framework_file}</div>
@@ -92,8 +142,8 @@ function GameManager() {
               </td>
               <td>{new Date(g.created_at).toLocaleString()}</td>
               <td>
-                <button onClick={() => updateGameTitle(g.id)}>Edit</button>
-                <button onClick={() => deleteGame(g.id)}>Hapus</button>
+                <button className="admin-button" onClick={() => updateGameTitle(g.id)}>Edit</button>
+                <button className="admin-button" onClick={() => deleteGame(g.id)}>Delete</button>
               </td>
             </tr>
           ))}

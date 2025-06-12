@@ -1,13 +1,14 @@
 import React from 'react';
 import ProfileManager from './ProfileManager';
 import GameManager from './GameManager';
+import './AdminDashboard.css';
 
 function AdminDashboard() {
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="admin-dashboard">
       <h1>Admin Dashboard</h1>
       <ProfileManager />
-      <hr />
+      <hr className="admin-divider" />
       <GameManager />
     </div>
   );

@@ -53,10 +53,10 @@ function Signup() {
           onChange={handleChange}
           required
         />
-        <button type="submit" className="auth-button">Daftar</button>
+        <button type="submit" className="auth-button">Register</button>
       </form>
       <p style={{ marginTop: '15px' }}>
-        Sudah punya akun? <Link to="/login" className="auth-link">Login</Link>
+        Already have an account? <Link to="/login" className="auth-link">Login</Link>
       </p>
     </div>
   );

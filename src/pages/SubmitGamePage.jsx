@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
+import "./SubmitGamePage.css";
 
 function SubmitGamePage() {
-  const [submitType, setSubmitType] = useState("upload"); // upload | url | iframe
+  const [submitType, setSubmitType] = useState("upload");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [url, setExternalUrl] = useState("");
@@ -11,9 +12,8 @@ function SubmitGamePage() {
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Reset files state when submitType changes
   useEffect(() => {
-    setFiles({}); // Reset the files state when submitType changes
+    setFiles({});
   }, [submitType]);
 
   const handleFileChange = (e) => {
@@ -78,70 +78,129 @@ function SubmitGamePage() {
       }
 
       alert("Game submitted successfully!");
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setExternalUrl("");
+      setIframeUrl("");
+      setFiles({});
     } catch (err) {
-      console.error("❌ Error submitting game:", err);
-      alert("Submission failed.");
+      console.error("Error submitting game:", err);
+      alert("Submission failed. Please check console for details.");
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <div className="submit-game-page">
-      <h2>Submit Game</h2>
+      <h2>Submit Your Game</h2>
+
       <form onSubmit={handleSubmit}>
-        <label>Title</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <div>
+          <label>Game Title *</label>
+          <input 
+            type="text" 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            required 
+            placeholder="Enter your game title"
+          />
+        </div>
 
-        <label>Description</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        <div>
+          <label>Description</label>
+          <textarea 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe your game (optional)"
+          />
+        </div>
 
-        <label>Submit Method</label>
-        <select value={submitType} onChange={(e) => setSubmitType(e.target.value)}>
-          <option value="upload">Upload Files</option>
-          <option value="url">From External URL</option>
-          <option value="iframe">Embed via iframe</option>
-        </select>
+        <div>
+          <label>Submission Method *</label>
+          <select 
+            value={submitType} 
+            onChange={(e) => setSubmitType(e.target.value)}
+          >
+            <option value="upload">Upload Game Files</option>
+            <option value="url">External Game URL</option>
+            <option value="iframe">Embed via iframe</option>
+          </select>
+        </div>
 
         {submitType === "upload" && (
           <div className="file-inputs">
-            <label>Loader File</label>
-            <input type="file" name="loader" onChange={handleFileChange} required />
+            <div>
+              <label>Loader File *</label>
+              <input 
+                type="file" 
+                name="loader" 
+                onChange={handleFileChange} 
+                required 
+              />
+              <span className="note">(.html file)</span>
+            </div>
 
-            <label>Framework File</label>
-            <input type="file" name="framework" onChange={handleFileChange} required />
+            <div>
+              <label>Framework File *</label>
+              <input 
+                type="file" 
+                name="framework" 
+                onChange={handleFileChange} 
+                required 
+              />
+              <span className="note">(.js file)</span>
+            </div>
 
-            <label>Data File</label>
-            <input type="file" name="data" onChange={handleFileChange} required />
+            <div>
+              <label>Data File *</label>
+              <input 
+                type="file" 
+                name="data" 
+                onChange={handleFileChange} 
+                required 
+              />
+              <span className="note">(.data file)</span>
+            </div>
 
-            <label>Code File (wasm)</label>
-            <input type="file" name="code" onChange={handleFileChange} required />
+            <div>
+              <label>Code File (WASM) *</label>
+              <input 
+                type="file" 
+                name="code" 
+                onChange={handleFileChange} 
+                required 
+              />
+              <span className="note">(.wasm file)</span>
+            </div>
           </div>
         )}
 
         {submitType === "url" && (
-          <>
-            <label>Loader URL</label>
+          <div>
+            <label>Game URL *</label>
             <input
               type="url"
               value={url}
               onChange={(e) => setExternalUrl(e.target.value)}
               required
+              placeholder="https://example.com/game"
             />
-          </>
+          </div>
         )}
 
         {submitType === "iframe" && (
-          <>
-            <label>iframe Embed URL</label>
+          <div>
+            <label>iframe Embed URL *</label>
             <input
               type="url"
               value={iframeUrl}
               onChange={(e) => setIframeUrl(e.target.value)}
               required
+              placeholder="https://example.com/game/embed"
             />
-          </>
+          </div>
         )}
 
         <button type="submit" disabled={loading}>
