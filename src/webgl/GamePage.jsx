@@ -1,24 +1,71 @@
-import React from "react";
-import { Unity, useUnityContext } from "react-unity-webgl";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+import UnityPlayer from "../pages/UnityPlayer.jsx"; // ⬅️ Komponen baru kita buat
 
 function GamePage() {
-    const { unityProvider } = useUnityContext({
-        loaderUrl: "build/webgl/tester_game.loader.js",
-        dataUrl: "build/webgl/tester_game.data.unityweb",
-        frameworkUrl: "build/webgl/tester_game.framework.js.unityweb",
-        codeUrl: "build/webgl/tester_game.wasm.unityweb",
-    });
-    
-    return (
-        <>
-            <div>
-                <h1>This is game page </h1>
-            </div>
-            <div>
-                <Unity unityProvider={unityProvider} style={{ width: 800, height: 600 }} />
-            </div>
-        </>
-    );
+  const { gameId } = useParams();
+  const [game, setGame] = useState(null);
+
+  const isValidURL = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }; 
+
+  useEffect(() => {
+    const fetchGame = async () => {
+      const { data, error } = await supabase
+        .from("games")
+        .select("*")
+        .eq("id", gameId)
+        .single();
+
+      if (error) {
+        console.error("❌ Failed to fetch game:", error);
+      } else {
+        setGame(data);
+      }
+    };
+
+    if (gameId) fetchGame();
+  }, [gameId]);
+
+  if (!game) return <p style={{ padding: "2rem" }}>Loading game...</p>;
+
+  return (
+    <div style={{ padding: "2rem" }}>
+      <h2>{game.title}</h2>
+      <p>{game.description}</p>
+
+      {game.submit_type === "upload" && (
+        <UnityPlayer game={game} />
+      )}
+
+      {game.submit_type === "url" && game.url && (
+        <iframe
+          src={game.url}
+          title={game.title}
+          width="1080px"
+          height="720px"  
+          frameBorder="0"
+          allowFullScreen
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"
+        />
+      )}
+
+      {game.submit_type === "iframe" && game.iframe_embed && (
+        <div
+          dangerouslySetInnerHTML={{ __html: game.iframe_embed }}
+          style={{ width: "1080px", minHeight: "720px" }}
+        />
+      )}
+    </div>
+  );
 }
 
 export default GamePage;

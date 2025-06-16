@@ -1,0 +1,224 @@
+/* Submit Game Page - Dark Purple Gaming Theme */
+.submit-game-page {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 40px;
+  background: rgba(30, 14, 47, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(123, 31, 162, 0.4);
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  color: #fff;
+  font-family: 'Oxanium', 'Segoe UI', sans-serif;
+  backdrop-filter: blur(8px);
+  box-sizing: border-box;
+  width: calc(100% - 30px); /* Account for padding */
+}
+
+.submit-game-page h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  background: linear-gradient(90deg, #9c27b0, #7b1fa2, #4a148c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
+  letter-spacing: 1px;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.submit-game-page h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #9c27b0, transparent);
+}
+
+.submit-game-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.submit-game-page label {
+  font-weight: 600;
+  color: #e1bee7;
+  margin-bottom: 8px;
+  font-family: 'Oxanium', sans-serif;
+  letter-spacing: 0.5px;
+  display: block;
+  width: 100%;
+}
+
+.submit-game-page input[type="text"],
+.submit-game-page input[type="url"],
+.submit-game-page textarea,
+.submit-game-page select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #4a148c;
+  border-radius: 8px;
+  background-color: rgba(45, 21, 68, 0.7);
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: inset 0 0 10px rgba(74, 20, 140, 0.3);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.submit-game-page input[type="text"]:focus,
+.submit-game-page input[type="url"]:focus,
+.submit-game-page textarea:focus,
+.submit-game-page select:focus {
+  outline: none;
+  border-color: #9c27b0;
+  box-shadow: 
+    inset 0 0 10px rgba(156, 39, 176, 0.5),
+    0 0 15px rgba(156, 39, 176, 0.3);
+}
+
+.submit-game-page textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.file-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.submit-game-page input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px dashed #7b1fa2;
+  border-radius: 8px;
+  background-color: rgba(45, 21, 68, 0.5);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.submit-game-page input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+.submit-game-page input[type="file"]::before {
+  content: 'Choose File';
+  display: inline-block;
+  background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.submit-game-page input[type="file"]:hover {
+  background-color: rgba(156, 39, 176, 0.2);
+  border-color: #9c27b0;
+}
+
+.submit-game-page button[type="submit"] {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);
+  color: white;
+  font-weight: bold;
+  font-family: 'Oxanium', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(123, 31, 162, 0.4);
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.submit-game-page button[type="submit"]:hover {
+  background: linear-gradient(135deg, #9c27b0 0%, #6a1b9a 100%);
+  box-shadow: 0 6px 20px rgba(156, 39, 176, 0.6);
+  transform: translateY(-2px);
+}
+
+.submit-game-page button[type="submit"]:disabled {
+  background: linear-gradient(135deg, #5a1a72 0%, #3a0f5c 100%);
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tech-note {
+  background-color: rgba(45, 21, 68, 0.7);
+  padding: 16px;
+  border-left: 4px solid #9c27b0;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  color: #e1bee7;
+  font-size: 15px;
+  line-height: 1.5;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.note {
+  color: #ba68c8;
+  font-size: 14px;
+  margin-left: 4px;
+  font-style: italic;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .submit-game-page {
+    padding: 30px 20px;
+    margin: 30px 15px;
+    width: calc(100% - 30px);
+  }
+  
+  .submit-game-page h2 {
+    font-size: 1.8rem;
+  }
+  
+  .submit-game-page button[type="submit"] {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .submit-game-page {
+    padding: 25px 15px;
+    margin: 20px 10px;
+    width: calc(100% - 20px);
+  }
+  
+  .submit-game-page h2 {
+    font-size: 1.5rem;
+  }
+  
+  .submit-game-page button[type="submit"] {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .submit-game-page input[type="text"],
+  .submit-game-page input[type="url"],
+  .submit-game-page textarea,
+  .submit-game-page select {
+    padding: 12px;
+  }
+}
