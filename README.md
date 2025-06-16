@@ -58,18 +58,6 @@ A research platform built with React and Supabase, allowing users to publish and
 * `npm test` / `yarn test` — Run unit tests with Jest.
 * `npm run lint` / `yarn lint` — Lint code using ESLint.
 
-## Folder Structure
-
-```
-/src
-├── components/      # Reusable React components
-├── hooks/           # Custom React hooks
-├── pages/           # Route components
-├── services/        # Supabase client and API calls
-├── styles/          # Global and component-level CSS/Sass
-└── utils/           # Helper functions and constants
-```
-
 ## Unity WebGL Integration
 
 * Place Unity build files in the `public/unity/` directory.
